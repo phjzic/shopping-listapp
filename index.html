@@ -264,7 +264,8 @@
         // Supabase 설정
         const SUPABASE_URL = 'https://wlumfiprqvwklnvwljqv.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsdW1maXBycXZ3a2xudndsanF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTExNzEsImV4cCI6MjA4NDM2NzE3MX0.RFvhaQGqGT4Hz5fWVXyBCqOvkeYW6i0T-9NAr4h-pu4';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { createClient } = supabase;
+        const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const itemInput = document.getElementById('itemInput');
         const addBtn = document.getElementById('addBtn');
@@ -278,7 +279,7 @@
 
         // 데이터베이스에서 아이템 불러오기
         async function loadItems() {
-            const { data, error } = await supabase
+            const { data, error } = await db
                 .from('shopping_items')
                 .select('*')
                 .order('created_at', { ascending: true });
@@ -329,7 +330,7 @@
             const text = itemInput.value.trim();
             if (text === '') return;
 
-            const { data, error } = await supabase
+            const { data, error } = await db
                 .from('shopping_items')
                 .insert([{ text, checked: false }])
                 .select();
@@ -346,7 +347,7 @@
         }
 
         async function deleteItem(id) {
-            const { error } = await supabase
+            const { error } = await db
                 .from('shopping_items')
                 .delete()
                 .eq('id', id);
@@ -366,7 +367,7 @@
 
             const newChecked = !item.checked;
 
-            const { error } = await supabase
+            const { error } = await db
                 .from('shopping_items')
                 .update({ checked: newChecked })
                 .eq('id', id);
@@ -385,7 +386,7 @@
 
             if (completedIds.length === 0) return;
 
-            const { error } = await supabase
+            const { error } = await db
                 .from('shopping_items')
                 .delete()
                 .in('id', completedIds);
